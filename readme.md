@@ -15,7 +15,7 @@ sudo apt install nodejs
 
 #### 几个库
 
-完成上一步骤后再进行以下命令，如果 windows 下[无法运行 npm](https://blog.csdn.net/oYinHeZhiGuang/article/details/124713422)。
+完成上一步骤后再进行以下命令，如果 windows 下[无法运行 npm 怎么办](https://blog.csdn.net/oYinHeZhiGuang/article/details/124713422)。
 
 ```bash
 npm install jsdom
