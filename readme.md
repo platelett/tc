@@ -15,6 +15,8 @@ sudo apt install nodejs
 
 #### 几个库
 
+完成上一步骤后再进行以下命令，如果 windows 下[无法运行 npm](https://blog.csdn.net/oYinHeZhiGuang/article/details/124713422)。
+
 ```bash
 npm install jsdom
 npm install adm-zip
@@ -28,11 +30,11 @@ npm install adm-zip
 
 把 TopCoder 的 Cookie 放进 Cookie.txt 里，失效的时候再更新。
 
-关于如何复制 Cookie 字符串，Chrome 浏览如图所示，F12 打开开发者工具，点到网络，ctrl + R，点击第一条请求，在请求标头中找到 cookie。
+关于如何复制 Cookie 字符串，Chrome 浏览如图所示，F12 打开开发者工具，点到网络，ctrl + R，点击第一条请求，在请求标头中找到 cookie，再右键，复制值。
 
 ![](1.png)
 
-#### 下载题数据
+#### 下载题目数据
 
 比如需要的题号为 14588，直接运行：
 
@@ -44,18 +46,18 @@ node main.js 14588
 
 之后生成一个目录 14588，目录包含如下内容：
 
-- 目录 data，包含评测用文件
+- 目录 data，包含二进制格式的测试数据
   - 1.in, 1.out
   - 2.in, 2.out
   - ...
-- 文件 data.txt，数据的文本形式
+- 文件 data.txt，测试数据的文本形式
 - 文件 grader.cpp，评测用文件
 - 文件 config.yaml，OJ 用文件。
 - 文件 compile.sh，OJ 用文件。
 
 另外，有几个可选参数：
 
-- `-j` 或 `-judge`，额外生成一个 `judge.sh`，在 Linux 下对 C++ 程序 `foo.cc` 进行简单测试（只测试正确性，不限制时间空间）。
+- `-j` 或 `-judge`，额外生成一个 `judge.sh`，在 Linux 下对同目录下的 C++ 程序 `foo.cc` 进行简单测试（只测试正确性，不限制时间空间）。
 
 ### 注意事项
 
