@@ -1,0 +1,11 @@
+type: default
+time: 500ms
+memory: 256m
+checker_type: strict
+user_extra_files:
+  - compile.sh
+  - grader.cpp
+subtasks:
+  - time: 500ms
+    memory: 256m
+    cases:
