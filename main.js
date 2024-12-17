@@ -4,10 +4,15 @@ const fs = require("fs");
 const path = require("path");
 
 // 配置变量
-const problemID = process.argv[2]; // 问题 ID，从命令行参数传入
-if (!problemID) {
-    console.error("Usage: node script.js <problemID>");
-    process.exit(1);
+var problemID , haveJudge = false; // 问题 ID，从命令行参数传入
+
+for(let i = 2; i < process.argv.length; i++) {
+    let arg = process.argv[i];
+    if(arg[0] != "-") problemID = arg;
+    else {
+        arg = arg.slice(1);
+        if(arg == "j" || arg == "judge") haveJudge = true;
+    }
 }
 
 const cookieFile = "Cookie.txt"; // 存储 Cookie 的文件
@@ -69,9 +74,15 @@ async function fetchProblemInfo() {
     };
 }
 
+const graderFilePath = path.join(outputFolder, "grader.cpp");
+const compileFilePath = path.join(outputFolder, "compile.sh");
+const judgeFilePath = path.join(outputFolder, "judge.sh");
+
+const compile = fs.readFileSync("compile.sh").toString();
+const judge = fs.readFileSync("judge.sh").toString();
+
 // 生成 grader 文件
 function generateGraderFile(info) {
-    const graderFilePath = path.join(outputFolder, "grader.cpp");
     let graderContent = graderTemplate + "\nint main() {\n";
     info.parameters.forEach((param, index) => {
         graderContent += `    auto _${index} = graderIO::read<${param}>();\n`;
@@ -98,7 +109,6 @@ async function fetchTestData() {
 }
 
 // 处理每个测试用例
-
 function processTestCase(testCase, index) {
     const dataFolder = path.join(outputFolder, "data");
     const inputFilePath = path.join(dataFolder, `${index}.in`);
@@ -133,6 +143,16 @@ function processTestCase(testCase, index) {
     console.log(`Processed test case ${index}: ${inputFilePath}, ${outputFilePath}`);
 }
 
+// 生成 compile.sh 文件
+function generateCompileScript() {
+    fs.writeFileSync(compileFilePath, compile);
+}
+
+// 生成 judge.sh 文件
+function generateJudgeScript(count) {
+    fs.writeFileSync(judgeFilePath, `count=${count}\n` + judge);
+}
+
 // 主函数
 (async function main() {
     try {
@@ -151,6 +171,13 @@ function processTestCase(testCase, index) {
 
         // Step 4: 处理每个测试用例
         testCases.forEach((testCase, index) => processTestCase(testCase, index + 1));
+
+        // Step 5: 生成 compile.sh 文件
+        generateCompileScript();
+
+        // Step 6: 生成 judge.sh 文件
+        if(haveJudge)
+            generateJudgeScript(testCases.length);
 
         console.log(`All files saved to folder: ${outputFolder}`);
     } catch (error) {
