@@ -59,7 +59,7 @@ node main.js 14588
 
 另外，有几个可选参数：
 
-- `-j` 或 `-judge`，额外生成一个 `judge.sh`，在 Linux 下对同目录下的 C++ 程序 `foo.cc` 进行简单测试（只测试正确性，不限制时间空间）。
+- `-j` 或 `-judge`，额外生成一个 `judge.sh` 和 `judge.cpp`，在 Linux 下对同目录下的 C++ 程序 `foo.cc` 进行简单测试（只测试正确性，不限制时间空间）。在 Windows 下运行 `judge.cpp` 同样可以测试代码。
 
 ### 注意事项
 
