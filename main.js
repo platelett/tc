@@ -145,27 +145,35 @@ function fetchTestData() {
     console.log(`Fetching test data from ${url}`);
     return httpsRequest(url)
         .then(html => {
-            const dom = new JSDOM(html);
-            const selector1 = "body > main > section.__className_c9cbed > article";
-            const list1 = dom.window.document.querySelector(selector1)
-            const len = list1.childElementCount;
-            const selector = "body > main > section.__className_c9cbed > article > div:nth-child(" + len + ") > ol";
-            const list = dom.window.document.querySelector(selector);
-            if (!list) {
-                throw new Error("Failed to extract test cases. Check the selector.");
+            // 定义一个数组来存储提取的结果
+            const resultArray = [];
+
+            // 使用正则表达式提取每个 <li><div>...</div></li> 的内容
+            const liDivRegex = /<li>\s*<div>(.*?)<\/div>\s*<\/li>/gs;
+
+            let match;
+            while ((match = liDivRegex.exec(html)) !== null) {
+                // match[1] 是 <div>...</div> 中的内容
+                const divContent = match[1];
+
+                // 使用正则提取 <p> 标签中的内容
+                const pTagRegex = /<p>(.*?)<\/p>/g;
+                let paragraphs = [];
+                let pMatch;
+
+                // 提取所有 <p> 标签中的内容
+                while ((pMatch = pTagRegex.exec(divContent)) !== null) {
+                    paragraphs.push(pMatch[1].trim()); // 获取 <p> 标签中的内容并去除前后空白
+                }
+
+                // 将所有提取出的段落内容用换行符连接
+                const joinedParagraphs = paragraphs.join('\n');
+
+                // 将拼接好的字符串放入结果数组中
+                resultArray.push(joinedParagraphs);
             }
-            return Array.from(list.querySelectorAll("li")).map((li) => {
-                // 查找当前 <li> 下的所有 <p> 标签
-                const pElements = li.querySelectorAll('p');
-    
-                // 提取每个 <p> 的内容，包括 HTML 实体符号，并用换行符连接
-                const combinedHTML = Array.from(pElements)
-                    .map(p => decodeHTMLEntities(p.innerHTML.trim())) // 解析 HTML 实体符号
-                    .join('\n');                                      // 用换行符连接每个 <p> 标签的内容
-            
-                // 如果没有 <p> 标签，返回整个 <li> 的 HTML 内容（包括解析）
-                return combinedHTML || decodeHTMLEntities(li.innerHTML.trim());
-            });
+
+            return resultArray;
         });
 }
 
@@ -237,7 +245,7 @@ function makeDataFile(data,info) {
         if(platform!="win32") cmd="./"+cmd;
         cp.exec((cmd), (err, stdout, stderr) => {
             if(err) return console.error(err);
-            fs.unlink(tempFilePath, err => { if(err) console.error(err); });
+            // fs.unlink(tempFilePath, err => { if(err) console.error(err); });
         });
     });
 }
