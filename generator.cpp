@@ -50,11 +50,14 @@ template<class T> bool readData(int cnt, ifstream& fin, buffer& buf) {
             loop:;
             try{
                 fin >> s;
-                if(s == "}") return false;
-                buf.push<T>(s);
+                T res;
+                if(is_same<T, int>::value) res = stoi(s);
+                if(is_same<T, long long>::value) res = stoll(s);
+                if(is_same<T, double>::value) res = stod(s);
             }catch(...){
                 goto loop;
             }
+            buf.push<T>(s);
             return true;
         }
     } else {

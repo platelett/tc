@@ -155,7 +155,6 @@ function fetchTestData() {
                 throw new Error("Failed to extract test cases. Check the selector.");
             }
             return Array.from(list.querySelectorAll("li")).map((li) => {
-                console.log("aaa: "+li.innerHTML);
                 // 查找当前 <li> 下的所有 <p> 标签
                 const pElements = li.querySelectorAll('p');
     
