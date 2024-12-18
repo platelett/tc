@@ -3,6 +3,7 @@ const https = require("https");
 const fs = require("fs");
 const cp = require("child_process");
 const path = require("path");
+const platform=process.platform
 
 // 配置变量
 var problemID, haveJudge = false; // 问题 ID，从命令行参数传入
@@ -82,12 +83,13 @@ function fetchProblemInfo() {
 
 const graderFilePath = path.join(outputFolder, "grader.cpp");
 const compileFilePath = path.join(outputFolder, "compile.sh");
+const compileCppFilePath = path.join(outputFolder, "compile.cpp");
 const judgeFilePath = path.join(outputFolder, "judge.sh");
-const judgecppFilePath = path.join(outputFolder, "judge.cpp");
+const judgeCppFilePath = path.join(outputFolder, "judge.cpp");
 const tempFilePath = path.join(outputFolder, "temp");
 
-
 const compile = fs.readFileSync("compile.sh").toString();
+const compileCpp = fs.readFileSync("compile.cpp").toString();
 const judge = fs.readFileSync("judge.sh").toString();
 const judgecpp = fs.readFileSync("judge.cpp").toString();
 
@@ -104,7 +106,8 @@ function typeInfo(s) {
 }
 // 生成 grader 文件
 function generateGraderFile(info) {
-    let graderContent = graderTemplate + "\nint main() {_setmode(_fileno(stdin), _O_BINARY);\n";
+    let graderContent = graderTemplate + "\nint main() {\n";
+    if(platform=="win32") graderContent=graderContent+"    _setmode(_fileno(stdin), _O_BINARY);\n";
     info.parameters.forEach((param, index) => {
         graderContent += `    auto _${index} = graderIO::read<${new typeInfo(param).toCpp()}>();\n`;
     });
@@ -196,9 +199,11 @@ function makeDataFile(data,info) {
     });
     fs.writeFile(tempFilePath, myTrim(raw), err => {
         if(err) return console.error(err);
-        cp.exec((`generator ${problemID}`), (err, stdout, stderr) => {
+        let cmd=`generator ${problemID}`;
+        if(platform!="win32") cmd="./"+cmd;
+        cp.exec((cmd), (err, stdout, stderr) => {
             if(err) return console.error(err);
-            // fs.unlink(tempFilePath, err => { if(err) console.error(err); });
+            fs.unlink(tempFilePath, err => { if(err) console.error(err); });
         });
     });
 }
@@ -206,12 +211,13 @@ function makeDataFile(data,info) {
 // 生成 compile.sh 文件
 function generateCompileScript() {
     fs.writeFileSync(compileFilePath, compile);
+    fs.writeFileSync(compileCppFilePath, compileCpp);
 }
 
 // 生成 judge.sh 文件
 function generateJudgeScript(count) {
     fs.writeFileSync(judgeFilePath, `count=${count}\n` + judge);
-    fs.writeFileSync(judgecppFilePath, `const int count=${count};\n` + judgecpp);
+    fs.writeFileSync(judgeCppFilePath, `const int count=${count};\n` + judgecpp);
 }
 
 // 主函数
