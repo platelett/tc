@@ -47,9 +47,14 @@ template<class T> bool readData(int cnt, ifstream& fin, buffer& buf) {
             return true;
         } else {
             string s;
-            fin >> s;
-            if(s == "}") return false;
-            buf.push<T>(s);
+            loop:;
+            try{
+                fin >> s;
+                if(s == "}") return false;
+                buf.push<T>(s);
+            }catch(...){
+                goto loop;
+            }
             return true;
         }
     } else {

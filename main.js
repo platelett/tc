@@ -100,7 +100,8 @@ function typeInfo(s) {
     this.type = s.slice(0, len), this.count = (s.length - len) / 2;
     this.toCpp = () => {
         let type = this.type.toLowerCase();
-        if(type == "long") type_cpp = "long long";
+        if(type == "long") type = "long long";
+        if(type == "string") type = "std::string";
         return "std::vector<".repeat(this.count) + type + ">".repeat(this.count);
     }
 }
@@ -118,6 +119,26 @@ function generateGraderFile(info) {
     console.log(`Grader file generated: ${graderFilePath}`);
 }
 
+const htmlEntitiesMap = {
+    '&amp;': '&',
+    '&lt;': '<',
+    '&gt;': '>',
+    '&quot;': '"',
+    '&#39;': "'",
+    '&#x2F;': '/',
+    '&nbsp;': ' ',   // 非断空格
+    '&#xA0;': ' ',   // 非断空格（十六进制表示法）
+    // 可以根据需要添加更多实体符号
+};
+
+// 处理带有 HTML 实体符号的字符串，将其替换为对应的字符
+function decodeHTMLEntities(str) {
+    return str.replace(/&[a-zA-Z0-9#]+;/g, (entity) => {
+        return htmlEntitiesMap[entity] || entity; // 如果未找到匹配的实体，则保持原状
+    });
+}
+
+
 // 提取测试数据
 function fetchTestData() {
     const url = `https://archive.topcoder.com/ProblemStatement/pm/${problemID}`;
@@ -133,7 +154,19 @@ function fetchTestData() {
             if (!list) {
                 throw new Error("Failed to extract test cases. Check the selector.");
             }
-            return Array.from(list.querySelectorAll("li")).map((li) => li.textContent.trim());
+            return Array.from(list.querySelectorAll("li")).map((li) => {
+                console.log("aaa: "+li.innerHTML);
+                // 查找当前 <li> 下的所有 <p> 标签
+                const pElements = li.querySelectorAll('p');
+    
+                // 提取每个 <p> 的内容，包括 HTML 实体符号，并用换行符连接
+                const combinedHTML = Array.from(pElements)
+                    .map(p => decodeHTMLEntities(p.innerHTML.trim())) // 解析 HTML 实体符号
+                    .join('\n');                                      // 用换行符连接每个 <p> 标签的内容
+            
+                // 如果没有 <p> 标签，返回整个 <li> 的 HTML 内容（包括解析）
+                return combinedHTML || decodeHTMLEntities(li.innerHTML.trim());
+            });
         });
 }
 
@@ -166,13 +199,15 @@ function processTestCase(testCase) {
 
 function parse(s) {
     let res = "", inq = false;
+    let cnt=0;
     for(let c of s) {
         if(c == "\"") inq = !inq;
         if(inq) res += c;
-        else if(c == "{") res += " { ";
-        else if(c == "}") res += " } ";
+        else if(c == "{") res += " { ",++cnt;
+        else if(c == "}") res += " } ",--cnt;
         else res += c == "," || c == "\n" ? " " : c;
     }
+    if(cnt>0) res+=" } ".repeat(cnt);
     return res + " ";
 }
 function myTrim(s) {
