@@ -145,6 +145,7 @@ function fetchTestData() {
     console.log(`Fetching test data from ${url}`);
     return httpsRequest(url)
         .then(html => {
+            fs.writeFileSync("t.html",html);
             // 定义一个数组来存储提取的结果
             const resultArray = [];
 
@@ -154,23 +155,12 @@ function fetchTestData() {
             let match;
             while ((match = liDivRegex.exec(html)) !== null) {
                 // match[1] 是 <div>...</div> 中的内容
-                const divContent = match[1];
-
-                // 使用正则提取 <p> 标签中的内容
-                const pTagRegex = /<p>(.*?)<\/p>/g;
-                let paragraphs = [];
-                let pMatch;
-
-                // 提取所有 <p> 标签中的内容
-                while ((pMatch = pTagRegex.exec(divContent)) !== null) {
-                    paragraphs.push(pMatch[1].trim()); // 获取 <p> 标签中的内容并去除前后空白
-                }
-
-                // 将所有提取出的段落内容用换行符连接
-                const joinedParagraphs = paragraphs.join('\n');
+                let divContent = match[1];
+                divContent=divContent.replaceAll("<p>","");
+                divContent=divContent.replaceAll("</p>","\n");
 
                 // 将拼接好的字符串放入结果数组中
-                resultArray.push(joinedParagraphs);
+                resultArray.push(divContent);
             }
 
             return resultArray;
@@ -245,7 +235,7 @@ function makeDataFile(data,info) {
         if(platform!="win32") cmd="./"+cmd;
         cp.exec((cmd), (err, stdout, stderr) => {
             if(err) return console.error(err);
-            // fs.unlink(tempFilePath, err => { if(err) console.error(err); });
+            fs.unlink(tempFilePath, err => { if(err) console.error(err); });
         });
     });
 }
