@@ -1,8 +1,4 @@
-由于原来的下载数据方式已经失效，这里写了个新的下载器。现在无法生成 config.yaml 文件。
-
-当前仓库未在 Linux 下测试。
-
-~~目前的问题是若题目输入中包含可能被解析为 html 的内容将可能无法正确处理，大部分情况下会先正确处理然后多出来一些用于补全的 html 标签，有概率影响后续读入，并且类似 `<A` 会被转成 `<a`。~~换了一种解析方式，除非存在 `<li><div>...</div></li>` 字段，否则一定能成功解析。
+由于原来的下载数据方式已经失效，这里换了一种解析方式，但是无法生成 config.yaml 文件。
 
 ### 依赖
 
@@ -57,14 +53,17 @@ node main.js 14588
 - 文件 data.txt，测试数据的文本形式
 - 文件 grader.cpp，评测用文件
 - 文件 compile.sh，OJ 用文件。
+- 文件 compile.cpp，Windows 下编译用文件。
 - ~~文件 config.yaml，OJ 用文件。~~
 
 另外，有几个可选参数：
 
-- `-j` 或 `-judge`，额外生成一个 `judge.sh` 和 `judge.cpp`，在 Linux 下对同目录下的 C++ 程序 `foo.cc` 进行简单测试（只测试正确性，不限制时间空间）。在 Windows 下运行 `judge.cpp` 同样可以测试代码。
+- `-j` 或 `-judge`，额外生成一个 `judge.sh` 和 `judge.cpp`，在 Linux 和 Windows 下对同目录下的 C++ 程序 `foo.cc` 进行简单测试（只测试正确性，不限制时间空间）。
 
 ### 注意事项
 
 - 源程序应采用和 TopCoder 一样的实现方式，不能使用 `stdin` 和 `stdout`，并且参数和返回值类型应当严格按照要求，比如要求返回值为 `int` 不能返回 `long long`。
 
 - 由于 grader.cpp 用了 C++11，所以评测时至少开 C++11。
+
+- Windows 下和 Linux 下生成的 grader.cpp 并不一致，不能混用。
