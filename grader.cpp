@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <type_traits>
+#include <fcntl.h>
 #include "foo.cc"
 
 namespace graderIO {

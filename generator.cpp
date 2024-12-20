@@ -40,15 +40,31 @@ template<class T> bool readData(int cnt, ifstream& fin, buffer& buf) {
     if(cnt == 0) {
         if(is_same<T, string>::value) {
             string s;
-            char c;
-            while(c = fin.get(), c != '\"') if(c == '}') return false;
-            while(c = fin.get(), c != '\"') s += c;
+            while(1){
+                s.clear();
+                char flg=1;
+                char c;
+                while(c = fin.get(), c != '\"'){
+                    if(c == '}') return false;
+                    if(c != ' ') flg=0;
+                }
+                while(c = fin.get(), c != '\"') s += c;
+                if(flg) break;
+            }
             buf.push<T>(s);
             return true;
         } else {
             string s;
-            fin >> s;
-            if(s == "}") return false;
+            loop:;
+            try{
+                fin >> s;
+                T res;
+                if(is_same<T, int>::value) res = stoi(s);
+                if(is_same<T, long long>::value) res = stoll(s);
+                if(is_same<T, double>::value) res = stod(s);
+            }catch(...){
+                goto loop;
+            }
             buf.push<T>(s);
             return true;
         }
@@ -90,4 +106,6 @@ int main(int argc, const char* argv[]) {
         ofstream(name + ".in", ios::binary).write(in.data, in.now - in.data);
         ofstream(name + ".out", ios::binary).write(out.data, out.now - out.data);
     }
+
+    return 0;
 }
