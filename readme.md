@@ -30,7 +30,7 @@ npm install adm-zip
 
 可以不设置 Cookie，如需设置访问 [Topcoder Archives](https://archive.topcoder.com/)，把 TopCoder 的 Cookie 放进 Cookie.txt 里，失效的时候再更新。注意访问的是 [Topcoder Archives](https://archive.topcoder.com/)，不是主站。
 
-关于如何复制 Cookie 字符串，Chrome 浏览如图所示，F12 打开开发者工具，点到网络，ctrl + R，点击第一条请求，在请求标头中找到 cookie，再右键，复制值。
+关于如何复制 Cookie 字符串，Chrome 浏览器如图所示，F12 打开开发者工具，点到网络，ctrl + R，点击第一条请求，在请求标头中找到 cookie，再右键，复制值。
 
 ![](1.png)
 
@@ -52,9 +52,9 @@ node main.js 14588
   - ...
 - 文件 data.txt，测试数据的文本形式
 - 文件 grader.cpp，评测用文件
-- 文件 compile.sh，OJ 用文件。
+- 文件 compile.sh，用于 HydroOJ 的文件。
 - 文件 compile.cpp，Windows 下编译用文件。
-- ~~文件 config.yaml，OJ 用文件。~~
+- ~~文件 config.yaml，用于 HydroOJ 的配置文件（以前同学部署了一个 Hydro 给大家用，所以实现了该项）。~~
 
 另外，有几个可选参数：
 
